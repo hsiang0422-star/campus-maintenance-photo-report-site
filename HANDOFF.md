@@ -18,7 +18,7 @@
 | `dist/2026/MM/index.html` | 各月份的修繕紀錄頁（8 月到 11 月） |
 | `dist/vendor/index.html` | 廠商修繕紀錄索引，樣式與首頁相同 |
 | `dist/vendor/high-vocational-basin-mirror/` | 高職部洗手台鏡子安裝（3 張照片，日期 2026-11-07） |
-| `dist/vendor/kindergarten-skylight-replacement/` | 幼兒部旁邊採光罩一到3樓更換（2 張照片，日期 2026-11-07） |
+| `dist/vendor/kindergarten-skylight-replacement/` | 幼兒部旁邊採光罩一到3樓更換（3 張照片，日期 2026-11-07） |
 | `dist/assets/YYYY-MM/` | 月報照片 |
 | `dist/assets/vendor/` | 廠商修繕照片 |
 | `dist/app.js`、`dist/style.css` | 共用的照片檢視與樣式 |
@@ -42,7 +42,7 @@
 - 首頁加上「廠商修繕紀錄」按鈕。
 - 廠商修繕紀錄索引頁，版面與首頁相同。
 - 高職部洗手台鏡子安裝：3 張照片，已推送（commit `788d418`，之後的 commit 有調整日期與樣式）。
-- 幼兒部旁邊採光罩一到3樓更換：2 張照片，已推送（commit `e2ae815`）。
+- 幼兒部旁邊採光罩一到3樓更換：3 張照片，已推送。第 3 張（2026-11-08 上傳）依照片內容判斷為採光罩更換，請確認。
 - 所有廠商項目的日期目前都設為 2026-11-07，這是使用者提供的日期。
 
 ## 待辦與注意事項
