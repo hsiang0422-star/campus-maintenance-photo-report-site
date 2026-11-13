@@ -5,6 +5,7 @@
   var n = photos.length;
   var current = 0;
   var scale = 1;
+  var MAX_SCALE = 4;
 
   modal.classList.add('viewer');
   modal.innerHTML =
@@ -17,7 +18,7 @@
       '<button type="button" class="v-btn" data-act="zoom-reset">還原尺寸</button>' +
       '<button type="button" class="v-btn v-close" data-act="close">關閉 ×</button>' +
     '</div>' +
-    '<div class="v-stage"><img alt=""></div>' +
+    '<div class="v-stage" title="Ctrl + 滾輪可縮放；放大後按住滑鼠拖曳可移動畫面"><img alt="" draggable="false"></div>' +
     '<div class="v-bar v-bottom">' +
       '<button type="button" class="v-btn" data-act="prev">‹ 上一張</button>' +
       '<p class="v-caption"></p>' +
@@ -33,8 +34,16 @@
   var zoomIn = modal.querySelector('[data-act="zoom-in"]');
   var zoomReset = modal.querySelector('[data-act="zoom-reset"]');
 
-  function setScale(next) {
-    scale = Math.min(4, Math.max(1, next));
+  // Zoom keeps the point under (ax, ay) fixed on screen; without an anchor it zooms around the centre.
+  function setScale(next, ax, ay) {
+    var target = Math.min(MAX_SCALE, Math.max(1, next));
+    var rect = stage.getBoundingClientRect();
+    var px = ax === undefined ? stage.clientWidth / 2 : ax - rect.left;
+    var py = ay === undefined ? stage.clientHeight / 2 : ay - rect.top;
+    var fx = (stage.scrollLeft + px) / stage.scrollWidth;
+    var fy = (stage.scrollTop + py) / stage.scrollHeight;
+
+    scale = target;
     if (scale === 1) {
       img.style.maxWidth = '';
       img.style.maxHeight = '';
@@ -46,13 +55,14 @@
       img.style.width = (scale * 100) + '%';
       img.style.height = 'auto';
     }
-    zoomIn.disabled = scale >= 4;
+    stage.classList.toggle('zoomed', scale > 1);
+    zoomIn.disabled = scale >= MAX_SCALE;
     zoomReset.disabled = scale === 1;
+
     if (scale > 1) {
-      requestAnimationFrame(function () {
-        stage.scrollLeft = (stage.scrollWidth - stage.clientWidth) / 2;
-        stage.scrollTop = (stage.scrollHeight - stage.clientHeight) / 2;
-      });
+      // Reading scrollWidth forces layout, so the new scroll position applies immediately.
+      stage.scrollLeft = fx * stage.scrollWidth - px;
+      stage.scrollTop = fy * stage.scrollHeight - py;
     } else {
       stage.scrollLeft = 0;
       stage.scrollTop = 0;
@@ -102,6 +112,35 @@
     if (event.key === '-') { event.preventDefault(); setScale(scale / 1.5); }
     if (event.key === '0') { event.preventDefault(); setScale(1); }
   });
+
+  // Ctrl + wheel (or trackpad pinch, which browsers report as ctrl + wheel) zooms the photo, not the page.
+  stage.addEventListener('wheel', function (event) {
+    if (!event.ctrlKey) return;
+    event.preventDefault();
+    setScale(scale * Math.exp(-event.deltaY * 0.0015), event.clientX, event.clientY);
+  }, { passive: false });
+
+  // Mouse drag pans the zoomed photo. Touch keeps the browser's native scrolling.
+  var drag = null;
+  stage.addEventListener('pointerdown', function (event) {
+    if (scale <= 1 || event.pointerType !== 'mouse' || event.button !== 0) return;
+    drag = { x: event.clientX, y: event.clientY, left: stage.scrollLeft, top: stage.scrollTop };
+    stage.setPointerCapture(event.pointerId);
+    stage.classList.add('dragging');
+    event.preventDefault();
+  });
+  stage.addEventListener('pointermove', function (event) {
+    if (!drag) return;
+    stage.scrollLeft = drag.left - (event.clientX - drag.x);
+    stage.scrollTop = drag.top - (event.clientY - drag.y);
+  });
+  function endDrag() {
+    if (!drag) return;
+    drag = null;
+    stage.classList.remove('dragging');
+  }
+  stage.addEventListener('pointerup', endDrag);
+  stage.addEventListener('pointercancel', endDrag);
 
   // Swipe between photos only when not zoomed, so panning still works.
   var startX = null;
