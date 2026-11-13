@@ -1,6 +1,22 @@
-.viewer-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.92);color:#123c3a;font-size:30px;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0;box-shadow:0 2px 8px rgba(0,0,0,.3)}
-.viewer-nav.prev{left:8px}
-.viewer-nav.next{right:8px}
-.viewer-nav:disabled{opacity:.3;cursor:default}
-.viewer-nav:focus-visible{outline:3px solid #d99b3d;outline-offset:2px}
-@media (max-width:520px){.viewer-nav{width:38px;height:38px;font-size:26px}}
+dialog.viewer{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;background:#0b1f1d;color:#fff}
+dialog.viewer[open]{display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+dialog.viewer::backdrop{background:#0b1f1d}
+.viewer .v-bar{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#123c3a;flex-wrap:wrap}
+.viewer .v-top{border-bottom:1px solid rgba(255,255,255,.12)}
+.viewer .v-bottom{border-top:1px solid rgba(255,255,255,.12)}
+.viewer .v-spacer{flex:1}
+.viewer .v-count{font-size:15px;min-width:64px;text-align:center;font-variant-numeric:tabular-nums}
+.viewer .v-caption{flex:1;margin:0;text-align:center;font-size:15px;color:#fff;min-width:0}
+.viewer .v-btn{min-height:40px;padding:8px 14px;border:1px solid rgba(255,255,255,.5);border-radius:8px;background:rgba(255,255,255,.1);color:#fff;font:inherit;font-size:15px;cursor:pointer;white-space:nowrap}
+.viewer .v-btn:hover{background:rgba(255,255,255,.22)}
+.viewer .v-btn:focus-visible{outline:3px solid #d99b3d;outline-offset:2px}
+.viewer .v-btn:disabled{opacity:.35;cursor:default;background:rgba(255,255,255,.04)}
+.viewer .v-close{background:#fff;color:#123c3a;border-color:#fff}
+.viewer .v-close:hover{background:#dfe8e6}
+.viewer .v-stage{position:relative;display:flex;overflow:auto;min-height:0;min-width:0}
+.viewer .v-stage img{display:block;margin:auto;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
+@media (max-width:600px){
+  .viewer .v-bar{padding:8px;gap:6px}
+  .viewer .v-btn{padding:8px 10px;font-size:14px;min-height:38px}
+  .viewer .v-caption{font-size:13px}
+}
