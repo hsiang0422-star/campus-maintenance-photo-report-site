@@ -1,4 +1,16 @@
 (function () {
+  // Keep the before/after image mask in sync with the range control.
+  document.querySelectorAll('[data-compare]').forEach(function (compare) {
+    var range = compare.querySelector('input[type="range"]');
+    if (!range) return;
+    function updatePosition() {
+      compare.style.setProperty('--pos', range.value + '%');
+    }
+    range.addEventListener('input', updatePosition);
+    range.addEventListener('change', updatePosition);
+    updatePosition();
+  });
+
   var modal = document.querySelector('dialog');
   if (!modal) return;
   var photos = Array.prototype.slice.call(document.querySelectorAll('.photo'));
