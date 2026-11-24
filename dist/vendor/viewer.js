@@ -12,41 +12,35 @@
   });
 
 
-  // Track pointer position across the full comparison image so the divider can be dragged directly.
+  // Drag anywhere on the comparison; keep the range keyboard-accessible.
   document.querySelectorAll('[data-compare]').forEach(function (compare) {
     var range = compare.querySelector('input[type="range"]');
     if (!range) return;
     var dragging = false;
     compare.style.touchAction = 'pan-y';
-
     function setFromPointer(event) {
       var rect = compare.getBoundingClientRect();
       if (!rect.width) return;
-      var percent = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100));
-      range.value = String(Math.round(percent));
+      range.value = String(Math.round(Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100))));
       compare.style.setProperty('--pos', range.value + '%');
     }
-
     compare.addEventListener('pointerdown', function (event) {
       if (event.pointerType === 'mouse' && event.button !== 0) return;
-      event.preventDefault();
       dragging = true;
       try { compare.setPointerCapture(event.pointerId); } catch (e) {}
+      try { range.focus({ preventScroll: true }); } catch (e) { range.focus(); }
       setFromPointer(event);
+      event.preventDefault();
     });
-    compare.addEventListener('pointermove', function (event) {
-      if (dragging) setFromPointer(event);
-    });
-    function stopDragging(event) {
+    compare.addEventListener('pointermove', function (event) { if (dragging) setFromPointer(event); });
+    function stop(event) {
       if (!dragging) return;
       dragging = false;
       try { if (compare.hasPointerCapture(event.pointerId)) compare.releasePointerCapture(event.pointerId); } catch (e) {}
     }
-    compare.addEventListener('pointerup', stopDragging);
-    compare.addEventListener('pointercancel', stopDragging);
-    range.addEventListener('input', function () {
-      compare.style.setProperty('--pos', range.value + '%');
-    });
+    compare.addEventListener('pointerup', stop);
+    compare.addEventListener('pointercancel', stop);
+    range.addEventListener('input', function () { compare.style.setProperty('--pos', range.value + '%'); });
   });
 
   var modal = document.querySelector('dialog');
