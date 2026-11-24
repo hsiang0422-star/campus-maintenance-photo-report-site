@@ -30,6 +30,8 @@ jobs:
         with:
           path: dist
           name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Wait for artifact indexing
+        run: sleep 15
       - id: deployment
         uses: actions/deploy-pages@v4
         with:
